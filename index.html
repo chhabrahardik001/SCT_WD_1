@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopEase - Multi-category</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #fdf5e6; }
+    header { background-color: #ff9a00; padding: 10px 0; }
+    nav { display: flex; justify-content: center; flex-wrap: wrap; }
+    nav button {
+      background-color: transparent;
+      border: none;
+      padding: 14px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      color: #fff;
+      transition: background 0.3s;
+    }
+    nav button:hover, nav .active { background-color: #d87e00; }
+    .container { padding: 20px; }
+    .banner {
+      background: linear-gradient(to right, #ffcc70, #ff9a00);
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .section-title { font-size: 24px; margin-bottom: 20px; color: #444; }
+    .products { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .product {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      flex: 1 1 200px;
+      max-width: 220px;
+      text-align: center;
+    }
+    .product img {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .product-name { font-size: 16px; margin-bottom: 5px; }
+    .price { color: #888; margin-bottom: 10px; }
+    .add-to-cart {
+      background-color: #000;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .add-to-cart:hover { background-color: #444; }
+    .cart { position: relative; }
+    .cart span {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      background-color: red;
+      color: white;
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 50%;
+    }
+    #popup {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      font-size: 14px;
+      z-index: 1000;
+      display: none;
+      animation: fadeInOut 2s ease forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-10px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-10px); }
+    }
+    .cart-section {
+      margin-top: 40px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    .cart-item { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .total { font-weight: bold; text-align: right; margin-top: 20px; }
+    .buy-now {
+      display: block;
+      width: 100%;
+      background-color: #28a745;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .buy-now:hover { background-color: #218838; }
+  </style>
+</head>
+<body>
+<header>
+  <nav>
+    <button onclick="displayCategory('jewellery')" class="active">Jewellery</button>
+    <button onclick="displayCategory('groceries')">Groceries</button>
+    <button onclick="displayCategory('footwear')">Footwear</button>
+    <button onclick="displayCategory('women')">Women’s Wear</button>
+    <button onclick="displayCategory('men')">Men’s Wear</button>
+    <button onclick="displayCategory('kids')">Kids’ Wear</button>
+    <button class="cart">Cart <span id="cart-count">0</span></button>
+  </nav>
+</header>
+<div class="container">
+  <div class="banner">
+    <h2>Welcome to ShopEase</h2>
+    <p>Your one-stop shop for everything you need!</p>
+  </div>
+  <h3 class="section-title" id="category-title">Jewellery</h3>
+  <div class="products" id="product-list"></div>
+  <div class="cart-section" id="cart-section">
+    <h3>Your Cart</h3>
+    <div id="cart-items"></div>
+    <div class="total">Total: $<span id="cart-total">0.00</span></div>
+    <button class="buy-now" onclick="buyNow()">Buy Now</button>
+  </div>
+</div>
+<div id="popup">Added to cart successfully!</div>
+<script>
+const products = {
+  jewellery: [
+    { name: "Gold Necklace", price: 299.99, image: "https://png.pngtree.com/png-clipart/20231006/original/pngtree-gold-necklace-on-stand-isolated-white-background-3d-rendering-png-image_13280212.png" },
+    { name: "Diamond Ring", price: 499.99, image: "https://tse3.mm.bing.net/th?id=OIP.5Q6ZQXIh1WKquAd9i7rXQwHaE7&pid=Api&P=0&h=180" }
+  ],
+  groceries: [
+    { name: "Rice 5kg", price: 12.5, image: "http://pluspng.com/img-png/sack-of-rice-png-a-2000.jpg" },
+    { name: "Wheat Flour", price: 10.0, image: "https://thumbs.dreamstime.com/z/wheat-flour-sack-burlap-ears-grains-isolated-white-background-193017332.jpg" }
+  ],
+  footwear: [
+    { name: "Running Shoes", price: 59.99, image: "https://tse4.mm.bing.net/th?id=OIP.4fjGJPzLnu-wIpuq401nfwHaEN&pid=Api&P=0&h=180" },
+    { name: "Sandals", price: 25.0, image: "https://tse1.mm.bing.net/th?id=OIP.ZOSC7-sKLMf-x2nYjjjp4AHaFj&pid=Api&P=0&h=180" }
+  ],
+  women: [
+    { name: "Saree", price: 45.0, image: "https://stylesatlife.com/wp-content/uploads/2019/03/Plain-white-saree.jpg" },
+    { name: "Kurti", price: 30.0, image: "https://stylesatlife.com/wp-content/uploads/2018/01/Designer-Black-Kurti.jpg" }
+  ],
+  men: [
+    { name: "Shirt", price: 35.0, image: "https://tse1.mm.bing.net/th?id=OIP.BXPav46zzCT_LQwvXBf4ywHaJf&pid=Api&P=0&h=180" },
+    { name: "Trousers", price: 40.0, image: "https://tse3.mm.bing.net/th?id=OIP.zGIMp7G31AkZkbiZ2FkzsAHaHa&pid=Api&P=0&h=180" }
+  ],
+  kids: [
+    { name: "Kids T-shirt", price: 20.0, image: "https://cdn2.bigcommerce.com/server2700/18e00/products/9128/images/15091/FLAGKIDS__27023.1440021706.1280.1280.jpg?c=2" },
+    { name: "Shorts", price: 15.0, image: "https://img.freepik.com/premium-photo/branded-denim-shorts-isolated-white-background_94628-23183.jpg" }
+  ]
+};
+let cart = [];
+function displayCategory(category) {
+  document.getElementById('category-title').innerText = category.charAt(0).toUpperCase() + category.slice(1);
+  const productList = document.getElementById('product-list');
+  productList.innerHTML = '';
+  products[category].forEach((product, index) => {
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+      <img src="${product.image}" alt="${product.name}">
+      <div class="product-name">${product.name}</div>
+      <div class="price">$${product.price.toFixed(2)}</div>
+      <button class="add-to-cart" onclick="addToCart('${category}', ${index})">Add to Cart</button>
+    `;
+    productList.appendChild(div);
+  });
+  document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(btn => {
+    if (btn.innerText.toLowerCase().includes(category)) btn.classList.add('active');
+  });
+}
+function addToCart(category, index) {
+  const product = products[category][index];
+  cart.push(product);
+  document.getElementById('cart-count').innerText = cart.length;
+  showPopup();
+  renderCart();
+}
+function showPopup() {
+  const popup = document.getElementById('popup');
+  popup.style.display = 'block';
+  popup.style.animation = 'fadeInOut 2s ease forwards';
+  setTimeout(() => popup.style.display = 'none', 2000);
+}
+function renderCart() {
+  const cartItems = document.getElementById('cart-items');
+  const cartTotal = document.getElementById('cart-total');
+  cartItems.innerHTML = '';
+  let total = 0;
+  cart.forEach(item => {
+    total += item.price;
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<span>${item.name}</span><span>$${item.price.toFixed(2)}</span>`;
+    cartItems.appendChild(div);
+  });
+  cartTotal.innerText = total.toFixed(2);
+}
+function buyNow() {
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+  alert("Thank you for your purchase!");
+  cart = [];
+  document.getElementById('cart-count').innerText = "0";
+  renderCart();
+}
+displayCategory('jewellery');
+</script>
+</body>
+</html>
